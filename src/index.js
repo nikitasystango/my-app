@@ -1,30 +1,45 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React, { Suspense } from 'react'
+import ReactDOM from 'react-dom'
+import { Router } from 'react-router-dom'
+import browserHistory from './utils/history'
+import { toast } from 'react-toastify'
 import * as serviceWorker from './serviceWorker'
+import App from './containers/App'
+import 'rc-tree-select/assets/index.css'
+import 'semantic-ui-css/semantic.min.css'
+import 'semantic-ui-css/components/reset.min.css'
+import 'semantic-ui-css/components/site.min.css'
+import 'semantic-ui-css/components/button.min.css'
+import 'semantic-ui-css/components/container.min.css'
+import 'semantic-ui-css/components/dimmer.min.css'
+import 'semantic-ui-css/components/dropdown.min.css'
+import 'semantic-ui-css/components/grid.min.css'
+import 'semantic-ui-css/components/modal.min.css'
+import 'semantic-ui-css/components/transition.min.css'
+import 'semantic-ui-css/components/icon.min.css'
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+import 'react-toastify/dist/ReactToastify.css'
+import 'react-dates/lib/css/_datepicker.css'
+import 'react-dates/initialize'
+import 'slick-carousel/slick/slick.css'
+import 'slick-carousel/slick/slick-theme.css'
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-// reportWebVitals();
+
+toast.configure()
+
+ReactDOM.render((
+    <Suspense fallback={'...Loading'}>
+      <Router history={browserHistory} >
+        <App />
+      </Router>
+    </Suspense>
+), document.getElementById('root'))
 
 const configuration = {
   onUpdate: (registration) => {
-    console.log('inside onUpdate function', registration)
     if (registration && registration.waiting) {
-      console.log('registration.waiting', registration)
       registration.waiting.postMessage('skipWaiting')
       navigator.serviceWorker.ready.then((registrationSW) => {
-      console.log('registrationSW index file', registrationSW)
 
         registrationSW.unregister().then(() => {
           caches.keys().then(function (names) {
@@ -42,4 +57,4 @@ const configuration = {
 }
 
 
-serviceWorker.register()
+serviceWorker.register(configuration)

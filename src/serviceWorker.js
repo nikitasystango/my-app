@@ -1,5 +1,4 @@
 
-let installingWorker = ''
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost'
   // [::1] is the IPv6 localhost address.
@@ -9,7 +8,6 @@ const isLocalhost = Boolean(
     /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/,
   ),
 )
-
 export function register(config) {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href)
@@ -35,20 +33,20 @@ export function register(config) {
   }
 }
 
-if (installingWorker) {
-  installingWorker.addEventListener('message', (event) => {
-    if (event.data.action === 'skipWaiting') {
-      installingWorker.skipWaiting()
-    }
-  })
-}
+// if (installingWorker) {
+//   installingWorker.addEventListener('message', (event) => {
+//     if (event.data.action === 'skipWaiting') {
+//       installingWorker.skipWaiting()
+//     }
+//   })
+// }
 
 function registerValidSW(swUrl, config) {
   navigator.serviceWorker
     .register(swUrl)
     .then((registration) => {
       registration.onupdatefound = () => {
-        installingWorker = registration.installing
+       const installingWorker = registration.installing
         if (installingWorker == null) {
           return
         }
@@ -57,34 +55,20 @@ function registerValidSW(swUrl, config) {
             if (navigator.serviceWorker.controller) {
               // console.log(
               //   'New content is available and will be used when all '
-              //   + 'tabs for this page are closed. See https://bit.ly/CRA-PWA.',
+              //   + 'tabs for this page are closed. See https://bit.ly/CRA-PWA.',config
               // )
-
-              // const { body } = document
-              // body.className = 'show'
-              // document.getElementById('reload').addEventListener('click', () => {
-                localStorage.setItem('isNewVersionDeployed', true)
-                if (!installingWorker.waiting) {
-                  // installingWorker.postMessage('skipWaiting');
-                  navigator.serviceWorker.ready.then((registrationSW) => {
-                    registrationSW.unregister().then(() => {
-                      caches.keys().then(function (names) {
-                        // console.log(names, 'names of caches')
-                        // delete the available cache for
-                        caches.delete('workbox-precache')
-                        caches.delete('images')
-                        caches.delete('api-cache')
-                      })
-                      window.location.reload()
-                    })
-                  })
-                }
-              // })
               if (config && config.onUpdate) {
                 config.onUpdate(registration)
+              }else{
+                handleCacheClear(registration)
               }
             } else if (config && config.onSuccess) {
               config.onSuccess(registration)
+            }
+          }else{
+            // reload once when the new Service Worker starts redundant
+            if (installingWorker.state === 'redundant') {
+              handleCacheClear(registration)
             }
           }
         }
@@ -93,6 +77,24 @@ function registerValidSW(swUrl, config) {
     .catch((error) => {
       console.error('Error during service worker registration:', error)
     })
+}
+
+function handleCacheClear(registration) {
+  if (registration && registration.waiting) {
+    registration.waiting.postMessage('skipWaiting')
+    navigator.serviceWorker.ready.then((registrationSW) => {
+      registrationSW.unregister().then(() => {
+        caches.keys().then(function (names) {
+          // console.log(names, 'names of caches')
+          // delete the available cache for
+          caches.delete('workbox-precache')
+          caches.delete('images')
+          caches.delete('api-cache')
+        })
+        window.location.reload()
+      })
+    })
+  }
 }
 
 function checkValidServiceWorker(swUrl, config) {

@@ -14,9 +14,10 @@ if ('function' === typeof importScripts) {
     workbox.precaching.cleanupOutdatedCaches()
 
     /* custom cache rules*/
-    workbox.routing.registerNavigationRoute('/index.html', {
-      blacklist: [/^\/_/, /\/[^\/]+\.[^\/]+$/]
-    })
+    // Comment below code to exclude index.html from service worker cache in create-react-app
+    // workbox.routing.registerNavigationRoute('/index.html', {
+    //   blacklist: [/^\/_/, /\/[^\/]+\.[^\/]+$/]
+    // })
 
     workbox.routing.registerRoute(
       /\.(?:png|gif|jpg|jpeg|svg|ico|webp|json|html|ttf|woff|)$/,
